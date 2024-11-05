@@ -8,6 +8,9 @@ import org.jsoup.select.Elements;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.charset.MalformedInputException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -71,8 +74,22 @@ public class FBISParser implements DatasetParser {
         }
     }
 
+    public void parseSingleFile(File fbisFile, DocumentConsumer consumer) throws IOException {
+        if (fbisFile.isFile()) {
+            parseFBISFile(fbisFile, consumer);
+        } else {
+            throw new IllegalArgumentException("The provided file is not valid: " + fbisFile.getPath());
+        }
+    }
+
     private void parseFBISFile(File fbisFile, DocumentConsumer consumer) throws IOException {
-        String fileContent = Files.readString(fbisFile.toPath());
+        String fileContent;
+        try {
+            fileContent = Files.readString(fbisFile.toPath(), StandardCharsets.ISO_8859_1);
+        } catch (MalformedInputException e) {
+            System.err.println("Encoding error reading file: " + fbisFile.getName());
+            return;
+        }
         // Replacing special characters with actual symbols for indexing
         fileContent = replaceSpecialCharacters(fileContent);
 

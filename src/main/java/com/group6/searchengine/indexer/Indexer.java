@@ -1,10 +1,8 @@
 package com.group6.searchengine.indexer;
 
-import com.group6.searchengine.data.FBISData;
-import com.group6.searchengine.data.FR94Data;
+import com.group6.searchengine.data.DocumentData;
 import com.group6.searchengine.parsers.DatasetParser;
 import com.group6.searchengine.parsers.FBISParser;
-import com.group6.searchengine.parsers.FR94Parser;
 import com.group6.searchengine.parsers.DocumentConsumer;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -17,9 +15,7 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
@@ -30,26 +26,17 @@ public class Indexer {
     private IndexWriter indexWriter;
     // Create specific analyzers for different fields
     private Analyzer titleAnalyzer;
-    private Analyzer textAnalyzer;
-
-    // FIBS specific analyzer
     private Analyzer abstractAnalyzer;
-
-    // FR94 specific analyzer
-    private Analyzer summaryAnalyzer;
+    private Analyzer textAnalyzer;
 
     public Indexer(String indexPath) throws IOException {
         Directory indexDir = FSDirectory.open(Paths.get(indexPath));
         IndexWriterConfig config = new IndexWriterConfig(new StandardAnalyzer()); // Default analyzer
         this.indexWriter = new IndexWriter(indexDir, config);
+
         this.titleAnalyzer = new StandardAnalyzer();
-        this.textAnalyzer = new EnglishAnalyzer();
-        // FIBS specific analyzer
         this.abstractAnalyzer = new EnglishAnalyzer();
-
-        // FR94 analyzer
-        this.summaryAnalyzer = new EnglishAnalyzer();
-
+        this.textAnalyzer = new EnglishAnalyzer();
     }
 
     public void indexFBIS(File fbisDirectory) throws IOException {
@@ -58,12 +45,7 @@ public class Indexer {
         fbisParser.parse(fbisDirectory, this::indexDocument);
     }
 
-    public void indexFR94(File fr94Dir) throws IOException {
-        FR94Parser fr94Parser = new FR94Parser();
-        fr94Parser.parse(fr94Dir, this::indexFR94Doc);
-    }
-
-    public void indexDocument(FBISData docData) throws IOException {
+    public void indexDocument(DocumentData docData) throws IOException {
         Document luceneDoc = new Document();
 
         luceneDoc.add(new StringField("docNo", docData.getDocNo(), Field.Store.YES));
@@ -75,19 +57,6 @@ public class Indexer {
         luceneDoc.add(new StringField("language", docData.getLanguage(), Field.Store.NO));
         luceneDoc.add(new StringField("region", docData.getRegion(), Field.Store.NO));
         luceneDoc.add(new StringField("location", docData.getLocation(), Field.Store.NO));
-
-        indexWriter.addDocument(luceneDoc);
-    }
-
-    public void indexFR94Doc(FR94Data fr94Data) throws IOException {
-        Document luceneDoc = new Document();
-
-        luceneDoc.add(new StringField("docNo", fr94Data.getDocNo(), Field.Store.YES));
-        luceneDoc.add(analyzeAndAddField("title", fr94Data.getDocTitle(), titleAnalyzer));
-        luceneDoc.add(analyzeAndAddField("summary", fr94Data.getSummary(), summaryAnalyzer));
-        luceneDoc.add(new StringField("agency", fr94Data.getAgency(), Field.Store.NO));
-        luceneDoc.add(new StringField("usDept", fr94Data.getUsDept(), Field.Store.NO));
-        luceneDoc.add(analyzeAndAddField("text", fr94Data.getFullText(), textAnalyzer));
 
         indexWriter.addDocument(luceneDoc);
     }
@@ -116,14 +85,9 @@ public class Indexer {
             Indexer indexer = new Indexer("index/");
             
             // Index FBIS dataset
-            System.out.println("Indexing FBIS dataset...");
             indexer.indexFBIS(new File("../assignment-2/fbis"));
-            System.out.println("FBIS dataset indexed successfully.");
             
-            // Index FR94 dataset
-            System.out.println("Indexing FR94 dataset...");
-            indexer.indexFR94(new File("../assignment-2/fr94"));
-            System.out.println("FR94 dataset indexed successfully.");
+            // You can add more dataset parsers here
 
             indexer.close();
         } catch (IOException e) {

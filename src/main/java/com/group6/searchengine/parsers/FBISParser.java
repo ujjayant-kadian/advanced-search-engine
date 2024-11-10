@@ -1,6 +1,6 @@
 package com.group6.searchengine.parsers;
 
-import com.group6.searchengine.data.FBISData;
+import com.group6.searchengine.data.DocumentData;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class FBISParser implements DatasetParser<FBISData> {
+public class FBISParser implements DatasetParser {
 
     private static final Map<String, String> ENTITY_MAP = new HashMap<>();
 
@@ -66,7 +66,7 @@ public class FBISParser implements DatasetParser<FBISData> {
     }
 
     @Override
-    public void parse(File fbisDirectory, DocumentConsumer<FBISData> consumer) throws IOException {
+    public void parse(File fbisDirectory, DocumentConsumer consumer) throws IOException {
         for (File file : fbisDirectory.listFiles()) {
             if (file.isFile() && !file.getName().equals("readchg.txt") && !file.getName().equals("readmefb.txt")) {
                 parseFBISFile(file, consumer);
@@ -74,7 +74,7 @@ public class FBISParser implements DatasetParser<FBISData> {
         }
     }
 
-    public void parseSingleFile(File fbisFile, DocumentConsumer<FBISData> consumer) throws IOException {
+    public void parseSingleFile(File fbisFile, DocumentConsumer consumer) throws IOException {
         if (fbisFile.isFile()) {
             parseFBISFile(fbisFile, consumer);
         } else {
@@ -82,7 +82,7 @@ public class FBISParser implements DatasetParser<FBISData> {
         }
     }
 
-    private void parseFBISFile(File fbisFile, DocumentConsumer<FBISData> consumer) throws IOException {
+    private void parseFBISFile(File fbisFile, DocumentConsumer consumer) throws IOException {
         String fileContent;
         try {
             fileContent = Files.readString(fbisFile.toPath(), StandardCharsets.ISO_8859_1);
@@ -96,7 +96,7 @@ public class FBISParser implements DatasetParser<FBISData> {
         Document doc = Jsoup.parse(fileContent, "", org.jsoup.parser.Parser.xmlParser());
         
         for (Element element : doc.select("DOC")) {
-            FBISData docData = new FBISData();
+            DocumentData docData = new DocumentData();
 
             // Extracting required fields with null checking for missing tags
             docData.setDocNo(element.select("DOCNO").text());
@@ -145,4 +145,5 @@ public class FBISParser implements DatasetParser<FBISData> {
         content = content.replaceAll("(?m)^Article Type:\\s*.*$", "");
         return content.trim().replaceAll("\\s{2,}", " ");
     }
+
 }

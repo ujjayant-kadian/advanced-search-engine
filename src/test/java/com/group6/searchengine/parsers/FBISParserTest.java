@@ -1,6 +1,6 @@
 package com.group6.searchengine.parsers;
 
-import com.group6.searchengine.data.FBISData;
+import com.group6.searchengine.data.DocumentData;
 import org.junit.jupiter.api.Test;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -26,7 +26,7 @@ class FBISParserTest {
         }
     }
 
-    static class TestConsumer implements DocumentConsumer<FBISData> {
+    static class TestConsumer implements DocumentConsumer {
         private BufferedWriter writer;
 
         public TestConsumer(String outputFilePath) throws IOException {
@@ -36,7 +36,7 @@ class FBISParserTest {
         }
 
         @Override
-        public void consume(FBISData documentData) {
+        public void consume(DocumentData documentData) {
             try {
                 writer.write("Document No: " + documentData.getDocNo());
                 writer.newLine();

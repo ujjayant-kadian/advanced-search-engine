@@ -10,13 +10,13 @@ import org.junit.jupiter.api.Test;
 
 import com.group6.searchengine.data.DocumentData;
 
-class FBISParserTest {
+class FR94ParserTest {
 
     @Test
     void testParseFBISFile() {
-        File fbisDirectory = new File("assignment-2/fbis/fb496262");
-        FBISParser parser = new FBISParser();
-        String outputFilePath = "test-outputs/fbis-parser.txt";
+        File fbisDirectory = new File("assignment-2/fr94/12/fr941202.0");
+        FR94Parser parser = new FR94Parser();
+        String outputFilePath = "test-outputs/fr94-parser.txt";
 
         try {
             TestConsumer consumer = new TestConsumer(outputFilePath);
@@ -42,21 +42,19 @@ class FBISParserTest {
             try {
                 writer.write("Document No: " + documentData.getDocNo());
                 writer.newLine();
-                writer.write("Author: " + documentData.getAuthor());
-                writer.newLine();
-                writer.write("Date: " + documentData.getDate());
-                writer.newLine();
                 writer.write("Title: " + documentData.getTitle());
                 writer.newLine();
                 writer.write("Abstract: " + documentData.getAbs());
                 writer.newLine();
                 writer.write("Text: " + documentData.getText());
                 writer.newLine();
-                writer.write("Region: " + documentData.getRegion());
+                writer.write("US Dept: " + documentData.getUsDept());
                 writer.newLine();
-                writer.write("Location: " + documentData.getLocation());
+                writer.write("Agency: " + documentData.getAgency());
                 writer.newLine();
-                writer.write("Language: " + documentData.getLanguage());
+                writer.write("Action: " + documentData.getAction());
+                writer.newLine();
+                writer.write("Supplementary: " + documentData.getSupplementary());
                 writer.newLine();
                 writer.write("--------------------------------------------------");
                 writer.newLine();

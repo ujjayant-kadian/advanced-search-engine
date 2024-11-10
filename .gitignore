@@ -2,6 +2,10 @@ target/
 
 assignment-2/
 
+.idea/
+
+index/
+
 topics
 
 dependency-reduced-pom.xml

@@ -67,6 +67,7 @@ public class FBISParser implements DatasetParser {
 
     @Override
     public void parse(File fbisDirectory, DocumentConsumer consumer) throws IOException {
+        System.out.println("Parsing FBIS Dataset");
         for (File file : fbisDirectory.listFiles()) {
             if (file.isFile() && !file.getName().equals("readchg.txt") && !file.getName().equals("readmefb.txt")) {
                 parseFBISFile(file, consumer);
@@ -97,48 +98,69 @@ public class FBISParser implements DatasetParser {
         
         for (Element element : doc.select("DOC")) {
             DocumentData docData = new DocumentData();
-
+    
             // Extracting required fields with null checking for missing tags
-            docData.setDocNo(element.select("DOCNO").text());
-            docData.setAuthor(parseAuthors(element.select("AU")));
-            docData.setDate(element.select("DATE1").text());
-            docData.setTitle(element.select("TI").text());
-            docData.setAbs(element.select("ABS").text());
-            
+            docData.setDocNo(getOrNull(element, "DOCNO"));
+            docData.setAuthor(parseAuthorsOrNull(element.select("AU")));
+            docData.setDate(getOrNull(element, "DATE1"));
+            docData.setTitle(getOrNull(element, "TI"));
+            docData.setAbs(getOrNull(element, "ABS"));
+    
             String rawText = element.select("TEXT").text();
-            String cleanText = cleanText(rawText);
-            docData.setText(cleanText);
-
-            docData.setRegion(parseField(element, "F[P=100]"));
-            docData.setLocation(parseField(element, "F[P=101]"));
-            docData.setLanguage(parseField(element, "F[P=105]"));
-
+            docData.setText(cleanTextOrNull(rawText));
+    
+            docData.setRegion(parseFieldOrNull(element, "F[P=100]"));
+            docData.setLocation(parseFieldOrNull(element, "F[P=101]"));
+            docData.setLanguage(parseFieldOrNull(element, "F[P=105]"));
+    
             consumer.consume(docData);
         }
         
     }
 
     private String replaceSpecialCharacters(String content) {
+
+        if (content == null || content.isEmpty()) {
+            return "";
+        }
+
         for (Map.Entry<String, String> entry : ENTITY_MAP.entrySet()) {
             content = content.replace("&" + entry.getKey() + ";", entry.getValue());
         }
         return content;
     }
 
-    private String parseAuthors(Elements authorElements) {
+    private String getOrNull(Element element, String tagName) {
+        String content = element.select(tagName).text();
+        return content.isEmpty() ? null : content;
+    }
+
+    private String parseFieldOrNull(Element element, String cssQuery) {
+        Element fieldElement = element.selectFirst(cssQuery);
+        return (fieldElement == null || fieldElement.text().isEmpty()) ? null : fieldElement.text();
+    }
+
+    private String parseAuthorsOrNull(Elements authorElements) {
+        if (authorElements == null || authorElements.isEmpty()) {
+            return null;
+        }
         List<String> authors = new ArrayList<>();
         for (Element authorElement : authorElements) {
             authors.add(authorElement.text());
         }
-        return String.join(", ", authors);
+        return authors.isEmpty() ? null : String.join(", ", authors);
     }
 
-    private String parseField(Element element, String cssQuery) {
-        Element fieldElement = element.selectFirst(cssQuery);
-        return fieldElement != null ? fieldElement.text() : "";
+    private String cleanTextOrNull(String content) {
+        if (content == null) return null;
+        content = cleanText(content);
+        return content.isEmpty() ? null : content;
     }
 
     private String cleanText(String content) {
+        if (content == null) {
+            return "";
+        }
         content = content.replaceAll("\\[\\w+\\]", "");
         content = content.replaceAll("<F P=\\d+>.*?</F>", "");
         content = content.replaceAll("(?m)^Language:\\s*.*$", "");

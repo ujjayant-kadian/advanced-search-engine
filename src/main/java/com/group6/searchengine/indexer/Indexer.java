@@ -1,25 +1,27 @@
 package com.group6.searchengine.indexer;
 
-import com.group6.searchengine.data.DocumentData;
-import com.group6.searchengine.parsers.DatasetParser;
-import com.group6.searchengine.parsers.FBISParser;
-import com.group6.searchengine.parsers.DocumentConsumer;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.en.EnglishAnalyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.apache.lucene.document.*;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.ArrayList;
+import com.group6.searchengine.data.DocumentData;
+import com.group6.searchengine.parsers.FBISParser;
 
 public class Indexer {
 
@@ -85,7 +87,7 @@ public class Indexer {
             Indexer indexer = new Indexer("index/");
             
             // Index FBIS dataset
-            indexer.indexFBIS(new File("../assignment-2/fbis"));
+            indexer.indexFBIS(new File("assignment-2/fbis"));
             
             // You can add more dataset parsers here
 

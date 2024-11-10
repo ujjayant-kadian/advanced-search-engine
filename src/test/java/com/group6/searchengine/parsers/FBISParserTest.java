@@ -1,18 +1,20 @@
 package com.group6.searchengine.parsers;
 
-import com.group6.searchengine.data.DocumentData;
-import org.junit.jupiter.api.Test;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.File;
+
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import org.junit.jupiter.api.Test;
+
+import com.group6.searchengine.data.DocumentData;
 
 class FBISParserTest {
 
     @Test
     void testParseFBISFile() {
-        File fbisDirectory = new File("../assignment-2/fbis/fb496262"); // Specify a test file path here
+        File fbisDirectory = new File("assignment-2/fbis/fb496262"); // Specify a test file path here
         FBISParser parser = new FBISParser();
         String outputFilePath = "test-outputs/fbis-parser.txt";
 

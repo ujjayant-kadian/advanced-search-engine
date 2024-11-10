@@ -1,20 +1,25 @@
 package com.group6.searchengine.data;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class DocumentData {
+    // Common
     private String docNo;
-    private String author;
-    private String date;
     private String title;
-    private String abs;
     private String text;
+    private String abs;
+    private String date;
+
+    //FBIS
+    private String author;
     private String language;
     private String region;
     private String location;
+
+    //FR94
+    private String usDept;
+    private String agency;
+    private String action;
+    private String supplementary;
 }

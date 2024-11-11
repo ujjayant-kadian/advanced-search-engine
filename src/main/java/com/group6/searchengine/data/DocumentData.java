@@ -22,4 +22,9 @@ public class DocumentData {
     private String agency;
     private String action;
     private String supplementary;
+
+    // LAT
+    private String section;
+    private String type;
+    private String graphic;
 }

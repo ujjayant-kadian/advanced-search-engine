@@ -24,6 +24,7 @@ import org.apache.lucene.store.FSDirectory;
 import com.group6.searchengine.data.DocumentData;
 import com.group6.searchengine.parsers.FBISParser;
 import com.group6.searchengine.parsers.FR94Parser;
+import com.group6.searchengine.parsers.LATimesParser;
 
 public class Indexer {
 
@@ -54,7 +55,14 @@ public class Indexer {
 
     public void indexFR94(File fr94Directory) throws IOException {
         FR94Parser fr94Parser = new FR94Parser();
+
         fr94Parser.parse(fr94Directory, this::indexDocumentFR94);
+    }
+
+    public void indexLAT(File latDirectory) throws IOException {
+        LATimesParser latParser = new LATimesParser();
+        
+        latParser.parse(latDirectory, this::indexDocumentLAT);
     }
 
     public void indexDocument(DocumentData docData) throws IOException {
@@ -79,18 +87,35 @@ public class Indexer {
     
         luceneDoc.add(new StringField("docNo", docData.getDocNo(), Field.Store.YES));
     
+        addFieldIfNotNull(luceneDoc, "date", docData.getDate());
+        addAnalyzedFieldIfNotNull(luceneDoc, "title", docData.getTitle(), titleAnalyzer);
+        addAnalyzedFieldIfNotNull(luceneDoc, "abstract", docData.getAbs(), abstractAnalyzer);
+        addAnalyzedFieldIfNotNull(luceneDoc, "text", docData.getText(), textAnalyzer);
+        addAnalyzedFieldIfNotNull(luceneDoc, "usDept", docData.getUsDept(), titleAnalyzer);
+        addAnalyzedFieldIfNotNull(luceneDoc, "agency", docData.getAgency(), titleAnalyzer);
+        addAnalyzedFieldIfNotNull(luceneDoc, "action", docData.getAction(), abstractAnalyzer);
+        addAnalyzedFieldIfNotNull(luceneDoc, "supplementary", docData.getSupplementary(), textAnalyzer);
+    
+        indexWriter.addDocument(luceneDoc);
+    }
+    
+    public void indexDocumentLAT(DocumentData docData) throws IOException {
+        Document luceneDoc = new Document();
+    
+        luceneDoc.add(new StringField("docNo", docData.getDocNo(), Field.Store.YES));
+    
         // Add fields only if they are not null or empty
         addFieldIfNotNull(luceneDoc, "date", docData.getDate());
         addAnalyzedFieldIfNotNull(luceneDoc, "title", docData.getTitle(), titleAnalyzer);
         addAnalyzedFieldIfNotNull(luceneDoc, "abstract", docData.getAbs(), abstractAnalyzer);
         addAnalyzedFieldIfNotNull(luceneDoc, "text", docData.getText(), textAnalyzer);
-        addFieldIfNotNull(luceneDoc, "usDept", docData.getUsDept());
-        addFieldIfNotNull(luceneDoc, "agency", docData.getAgency());
-        addFieldIfNotNull(luceneDoc, "action", docData.getAction());
-        addAnalyzedFieldIfNotNull(luceneDoc, "supplementary", docData.getSupplementary(), textAnalyzer);
+        addFieldIfNotNull(luceneDoc, "author", docData.getAuthor());
+        addFieldIfNotNull(luceneDoc, "section", docData.getSection());
+        addAnalyzedFieldIfNotNull(luceneDoc, "type", docData.getType(), titleAnalyzer);
+        addAnalyzedFieldIfNotNull(luceneDoc, "graphic", docData.getGraphic(), textAnalyzer);
     
         indexWriter.addDocument(luceneDoc);
-    }    
+    } 
 
     private TextField analyzeAndAddField(String fieldName, String fieldValue, Analyzer analyzer) throws IOException {
         if (fieldValue == null || fieldValue.isEmpty()) {
@@ -153,6 +178,9 @@ public class Indexer {
             // Index FR94 dataset
             indexer.indexFR94(new File("assignment-2/fr94"));
             
+            // Index LAT dataset
+            indexer.indexLAT(new File("assignment-2/latimes"));
+
             // You can add more dataset parsers here
 
             indexer.close();

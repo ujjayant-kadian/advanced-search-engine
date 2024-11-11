@@ -25,6 +25,7 @@ import com.group6.searchengine.data.DocumentData;
 import com.group6.searchengine.parsers.FBISParser;
 import com.group6.searchengine.parsers.FR94Parser;
 import com.group6.searchengine.parsers.LATimesParser;
+import com.group6.searchengine.parsers.FTParser;
 
 public class Indexer {
 
@@ -49,7 +50,7 @@ public class Indexer {
 
     public void indexFBIS(File fbisDirectory) throws IOException {
         FBISParser fbisParser = new FBISParser();
-        
+
         fbisParser.parse(fbisDirectory, this::indexDocument);
     }
 
@@ -61,15 +62,21 @@ public class Indexer {
 
     public void indexLAT(File latDirectory) throws IOException {
         LATimesParser latParser = new LATimesParser();
-        
+
         latParser.parse(latDirectory, this::indexDocumentLAT);
+    }
+
+    public void indexFT(File ftDirectory) throws IOException {
+        FTParser ftParser = new FTParser();
+
+        ftParser.parse(ftDirectory, this::indexDocument);
     }
 
     public void indexDocument(DocumentData docData) throws IOException {
         Document luceneDoc = new Document();
-    
+
         luceneDoc.add(new StringField("docNo", docData.getDocNo(), Field.Store.YES));
-    
+
         addFieldIfNotNull(luceneDoc, "author", docData.getAuthor());
         addFieldIfNotNull(luceneDoc, "date", docData.getDate());
         addAnalyzedFieldIfNotNull(luceneDoc, "title", docData.getTitle(), titleAnalyzer);
@@ -78,15 +85,15 @@ public class Indexer {
         addFieldIfNotNull(luceneDoc, "language", docData.getLanguage());
         addFieldIfNotNull(luceneDoc, "region", docData.getRegion());
         addFieldIfNotNull(luceneDoc, "location", docData.getLocation());
-    
+
         indexWriter.addDocument(luceneDoc);
     }
 
     public void indexDocumentFR94(DocumentData docData) throws IOException {
         Document luceneDoc = new Document();
-    
+
         luceneDoc.add(new StringField("docNo", docData.getDocNo(), Field.Store.YES));
-    
+
         addFieldIfNotNull(luceneDoc, "date", docData.getDate());
         addAnalyzedFieldIfNotNull(luceneDoc, "title", docData.getTitle(), titleAnalyzer);
         addAnalyzedFieldIfNotNull(luceneDoc, "abstract", docData.getAbs(), abstractAnalyzer);
@@ -95,15 +102,15 @@ public class Indexer {
         addAnalyzedFieldIfNotNull(luceneDoc, "agency", docData.getAgency(), titleAnalyzer);
         addAnalyzedFieldIfNotNull(luceneDoc, "action", docData.getAction(), abstractAnalyzer);
         addAnalyzedFieldIfNotNull(luceneDoc, "supplementary", docData.getSupplementary(), textAnalyzer);
-    
+
         indexWriter.addDocument(luceneDoc);
     }
-    
+
     public void indexDocumentLAT(DocumentData docData) throws IOException {
         Document luceneDoc = new Document();
-    
+
         luceneDoc.add(new StringField("docNo", docData.getDocNo(), Field.Store.YES));
-    
+
         // Add fields only if they are not null or empty
         addFieldIfNotNull(luceneDoc, "date", docData.getDate());
         addAnalyzedFieldIfNotNull(luceneDoc, "title", docData.getTitle(), titleAnalyzer);
@@ -113,9 +120,25 @@ public class Indexer {
         addFieldIfNotNull(luceneDoc, "section", docData.getSection());
         addAnalyzedFieldIfNotNull(luceneDoc, "type", docData.getType(), titleAnalyzer);
         addAnalyzedFieldIfNotNull(luceneDoc, "graphic", docData.getGraphic(), textAnalyzer);
-    
+
         indexWriter.addDocument(luceneDoc);
-    } 
+    }
+
+    public void indexDocumentFT(DocumentData docData) throws IOException {
+        Document luceneDoc = new Document();
+
+        luceneDoc.add(new StringField("docNo", docData.getDocNo(), Field.Store.YES));
+
+        addFieldIfNotNull(luceneDoc, "profile", docData.getProfile());
+        addFieldIfNotNull(luceneDoc, "date", docData.getDate());
+        addAnalyzedFieldIfNotNull(luceneDoc, "headline", docData.getHeadline(), textAnalyzer);
+        addAnalyzedFieldIfNotNull(luceneDoc, "byline", docData.getByline(), textAnalyzer);
+        addAnalyzedFieldIfNotNull(luceneDoc, "text", docData.getText(), textAnalyzer);
+        addAnalyzedFieldIfNotNull(luceneDoc, "pub", docData.getPub(), titleAnalyzer);
+        addAnalyzedFieldIfNotNull(luceneDoc, "page", docData.getPage(), textAnalyzer);
+
+        indexWriter.addDocument(luceneDoc);
+    }
 
     private TextField analyzeAndAddField(String fieldName, String fieldValue, Analyzer analyzer) throws IOException {
         if (fieldValue == null || fieldValue.isEmpty()) {
@@ -130,7 +153,7 @@ public class Indexer {
             }
             tokenStream.end();
         }
-    
+
         String analyzedValue = String.join(" ", tokens);
         return new TextField(fieldName, analyzedValue, Field.Store.NO);
     }
@@ -140,7 +163,7 @@ public class Indexer {
             luceneDoc.add(new StringField(fieldName, fieldValue, Field.Store.NO));
         }
     }
-    
+
     private void addAnalyzedFieldIfNotNull(Document luceneDoc, String fieldName, String fieldValue, Analyzer analyzer) throws IOException {
         TextField analyzedField = analyzeAndAddField(fieldName, fieldValue, analyzer);
         if (analyzedField != null) {
@@ -171,17 +194,18 @@ public class Indexer {
     public static void main(String[] args) {
         try {
             Indexer indexer = new Indexer("index/");
-            
+
             // Index FBIS dataset
             indexer.indexFBIS(new File("assignment-2/fbis"));
 
             // Index FR94 dataset
             indexer.indexFR94(new File("assignment-2/fr94"));
-            
+
             // Index LAT dataset
             indexer.indexLAT(new File("assignment-2/latimes"));
 
-            // You can add more dataset parsers here
+            // Index FT dataset
+            indexer.indexFT(new File("assignment-2/ft"));
 
             indexer.close();
         } catch (IOException e) {

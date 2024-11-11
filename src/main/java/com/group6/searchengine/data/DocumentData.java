@@ -27,4 +27,11 @@ public class DocumentData {
     private String section;
     private String type;
     private String graphic;
+
+    // FT
+    private String profile;
+    private String headline;
+    private String byline;
+    private String pub;
+    private String page;
 }

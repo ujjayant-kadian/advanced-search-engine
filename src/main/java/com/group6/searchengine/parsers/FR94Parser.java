@@ -1,12 +1,5 @@
 package com.group6.searchengine.parsers;
 
-import com.group6.searchengine.data.DocumentData;
-
-import org.jsoup.Jsoup;
-
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.MalformedInputException;
@@ -14,6 +7,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+
+import com.group6.searchengine.data.DocumentData;
 
 public class FR94Parser implements DatasetParser {
     private static final Map<String, String> ENTITY_MAP = new HashMap<>();
@@ -162,7 +161,6 @@ public class FR94Parser implements DatasetParser {
         for (Element element : doc.select("DOC")) {
             DocumentData fr94Data = new DocumentData();
     
-            // Parse fields using helper methods
             fr94Data.setDocNo(parseField(element, "DOCNO"));
             fr94Data.setTitle(parseField(element, "DOCTITLE"));
             fr94Data.setAbs(parseField(element, "SUMMARY"));
@@ -172,7 +170,6 @@ public class FR94Parser implements DatasetParser {
             fr94Data.setDate(parseField(element, "DATE"));
             fr94Data.setSupplementary(parseField(element, "SUPPLEM"));
     
-            // Parse TEXT content
             Element textElement = element.selectFirst("TEXT");
             if (textElement != null) {
                 Element cleanedTextElement = excludeFieldsFromElement(textElement, "DOCTITLE", "USDEPT", "AGENCY", "SUMMARY", "ACTION", "SUPPLEM", "DATE");

@@ -1,20 +1,21 @@
 package com.group6.searchengine.parsers;
 
-import com.group6.searchengine.data.DocumentData;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.nio.charset.MalformedInputException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import com.group6.searchengine.data.DocumentData;
 
 public class FBISParser implements DatasetParser {
 
@@ -91,7 +92,7 @@ public class FBISParser implements DatasetParser {
             System.err.println("Encoding error reading file: " + fbisFile.getName());
             return;
         }
-        // Replacing special characters with actual symbols for indexing
+        
         fileContent = replaceSpecialCharacters(fileContent);
 
         Document doc = Jsoup.parse(fileContent, "", org.jsoup.parser.Parser.xmlParser());
@@ -99,7 +100,6 @@ public class FBISParser implements DatasetParser {
         for (Element element : doc.select("DOC")) {
             DocumentData docData = new DocumentData();
     
-            // Extracting required fields with null checking for missing tags
             docData.setDocNo(getOrNull(element, "DOCNO"));
             docData.setAuthor(parseAuthorsOrNull(element.select("AU")));
             docData.setDate(getOrNull(element, "DATE1"));
@@ -110,7 +110,7 @@ public class FBISParser implements DatasetParser {
             docData.setText(cleanTextOrNull(rawText));
     
             docData.setRegion(parseFieldOrNull(element, "F[P=100]"));
-            docData.setLocation(parseFieldOrNull(element, "F[P=101]"));
+            docData.setSection(parseFieldOrNull(element, "F[P=101]"));
             docData.setLanguage(parseFieldOrNull(element, "F[P=105]"));
     
             consumer.consume(docData);

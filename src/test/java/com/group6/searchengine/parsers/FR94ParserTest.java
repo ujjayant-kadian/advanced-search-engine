@@ -42,6 +42,8 @@ class FR94ParserTest {
             try {
                 writer.write("Document No: " + documentData.getDocNo());
                 writer.newLine();
+                writer.write("Date: " + documentData.getDate());
+                writer.newLine();
                 writer.write("Title: " + documentData.getTitle());
                 writer.newLine();
                 writer.write("Abstract: " + documentData.getAbs());

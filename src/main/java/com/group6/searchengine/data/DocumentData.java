@@ -10,12 +10,12 @@ public class DocumentData {
     private String text;
     private String abs;
     private String date;
+    private String section;
 
     //FBIS
     private String author;
     private String language;
     private String region;
-    private String location;
 
     //FR94
     private String usDept;
@@ -24,7 +24,6 @@ public class DocumentData {
     private String supplementary;
 
     // LAT
-    private String section;
     private String type;
     private String graphic;
 

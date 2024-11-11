@@ -54,7 +54,7 @@ class FBISParserTest {
                 writer.newLine();
                 writer.write("Region: " + documentData.getRegion());
                 writer.newLine();
-                writer.write("Location: " + documentData.getLocation());
+                writer.write("Section: " + documentData.getSection());
                 writer.newLine();
                 writer.write("Language: " + documentData.getLanguage());
                 writer.newLine();

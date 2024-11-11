@@ -21,6 +21,8 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
+import com.group6.searchengine.analyzers.DateAnalyzer;
+import com.group6.searchengine.analyzers.LowercaseAnalyzer;
 import com.group6.searchengine.data.DocumentData;
 import com.group6.searchengine.parsers.FBISParser;
 import com.group6.searchengine.parsers.FR94Parser;
@@ -34,18 +36,41 @@ public class Indexer {
     private Analyzer titleAnalyzer;
     private Analyzer abstractAnalyzer;
     private Analyzer textAnalyzer;
+    private Analyzer authorAnalyzer;
+    private Analyzer dateAnalyzer;
+    private Analyzer sectionAnalyzer;
+    private Analyzer typeAnalyzer;
+    private Analyzer graphicAnalyzer;
+    private Analyzer languageAnalyzer;
+    private Analyzer regionAnalyzer;
+    private Analyzer usDeptAnalyzer;
+    private Analyzer agencyAnalyzer;
+    private Analyzer actionAnalyzer;
+    private Analyzer supplementaryAnalyzer;
+
 
     public Indexer(String indexPath) throws IOException {
         System.out.println("Cleaning index folder!");
         clearIndexDirectory(indexPath);
 
         Directory indexDir = FSDirectory.open(Paths.get(indexPath));
-        IndexWriterConfig config = new IndexWriterConfig(new StandardAnalyzer()); // Default analyzer
+        IndexWriterConfig config = new IndexWriterConfig(new StandardAnalyzer());
         this.indexWriter = new IndexWriter(indexDir, config);
 
-        this.titleAnalyzer = new StandardAnalyzer();
+        this.titleAnalyzer = new EnglishAnalyzer();
         this.abstractAnalyzer = new EnglishAnalyzer();
         this.textAnalyzer = new EnglishAnalyzer();
+        this.authorAnalyzer = new LowercaseAnalyzer();
+        this.dateAnalyzer = new DateAnalyzer();
+        this.languageAnalyzer = new LowercaseAnalyzer();
+        this.regionAnalyzer = new LowercaseAnalyzer();
+        this.sectionAnalyzer = new StandardAnalyzer();
+        this.typeAnalyzer = new StandardAnalyzer();
+        this.graphicAnalyzer = new EnglishAnalyzer();
+        this.usDeptAnalyzer = new LowercaseAnalyzer();
+        this.agencyAnalyzer = new LowercaseAnalyzer();
+        this.actionAnalyzer = new EnglishAnalyzer();
+        this.supplementaryAnalyzer = new EnglishAnalyzer();
     }
 
     public void indexFBIS(File fbisDirectory) throws IOException {
@@ -76,16 +101,16 @@ public class Indexer {
         Document luceneDoc = new Document();
 
         luceneDoc.add(new StringField("docNo", docData.getDocNo(), Field.Store.YES));
-
-        addFieldIfNotNull(luceneDoc, "author", docData.getAuthor());
-        addFieldIfNotNull(luceneDoc, "date", docData.getDate());
+        
+        addAnalyzedFieldIfNotNull(luceneDoc, "author", docData.getAuthor(), authorAnalyzer);
+        addAnalyzedFieldIfNotNull(luceneDoc, "date", docData.getDate(), dateAnalyzer);
         addAnalyzedFieldIfNotNull(luceneDoc, "title", docData.getTitle(), titleAnalyzer);
         addAnalyzedFieldIfNotNull(luceneDoc, "abstract", docData.getAbs(), abstractAnalyzer);
         addAnalyzedFieldIfNotNull(luceneDoc, "text", docData.getText(), textAnalyzer);
-        addFieldIfNotNull(luceneDoc, "language", docData.getLanguage());
-        addFieldIfNotNull(luceneDoc, "region", docData.getRegion());
-        addFieldIfNotNull(luceneDoc, "location", docData.getLocation());
-
+        addAnalyzedFieldIfNotNull(luceneDoc, "language", docData.getLanguage(), languageAnalyzer);
+        addAnalyzedFieldIfNotNull(luceneDoc, "region", docData.getRegion(), regionAnalyzer);
+        addAnalyzedFieldIfNotNull(luceneDoc, "section", docData.getSection(), sectionAnalyzer);
+    
         indexWriter.addDocument(luceneDoc);
     }
 
@@ -93,16 +118,16 @@ public class Indexer {
         Document luceneDoc = new Document();
 
         luceneDoc.add(new StringField("docNo", docData.getDocNo(), Field.Store.YES));
-
-        addFieldIfNotNull(luceneDoc, "date", docData.getDate());
+    
+        addAnalyzedFieldIfNotNull(luceneDoc, "date", docData.getDate(), dateAnalyzer);
         addAnalyzedFieldIfNotNull(luceneDoc, "title", docData.getTitle(), titleAnalyzer);
         addAnalyzedFieldIfNotNull(luceneDoc, "abstract", docData.getAbs(), abstractAnalyzer);
         addAnalyzedFieldIfNotNull(luceneDoc, "text", docData.getText(), textAnalyzer);
-        addAnalyzedFieldIfNotNull(luceneDoc, "usDept", docData.getUsDept(), titleAnalyzer);
-        addAnalyzedFieldIfNotNull(luceneDoc, "agency", docData.getAgency(), titleAnalyzer);
-        addAnalyzedFieldIfNotNull(luceneDoc, "action", docData.getAction(), abstractAnalyzer);
-        addAnalyzedFieldIfNotNull(luceneDoc, "supplementary", docData.getSupplementary(), textAnalyzer);
-
+        addAnalyzedFieldIfNotNull(luceneDoc, "usDept", docData.getUsDept(), usDeptAnalyzer);
+        addAnalyzedFieldIfNotNull(luceneDoc, "agency", docData.getAgency(), agencyAnalyzer);
+        addAnalyzedFieldIfNotNull(luceneDoc, "action", docData.getAction(), actionAnalyzer);
+        addAnalyzedFieldIfNotNull(luceneDoc, "supplementary", docData.getSupplementary(), supplementaryAnalyzer);
+    
         indexWriter.addDocument(luceneDoc);
     }
 
@@ -110,17 +135,16 @@ public class Indexer {
         Document luceneDoc = new Document();
 
         luceneDoc.add(new StringField("docNo", docData.getDocNo(), Field.Store.YES));
-
-        // Add fields only if they are not null or empty
-        addFieldIfNotNull(luceneDoc, "date", docData.getDate());
+    
+        addAnalyzedFieldIfNotNull(luceneDoc, "date", docData.getDate(), dateAnalyzer);
         addAnalyzedFieldIfNotNull(luceneDoc, "title", docData.getTitle(), titleAnalyzer);
         addAnalyzedFieldIfNotNull(luceneDoc, "abstract", docData.getAbs(), abstractAnalyzer);
         addAnalyzedFieldIfNotNull(luceneDoc, "text", docData.getText(), textAnalyzer);
-        addFieldIfNotNull(luceneDoc, "author", docData.getAuthor());
-        addFieldIfNotNull(luceneDoc, "section", docData.getSection());
-        addAnalyzedFieldIfNotNull(luceneDoc, "type", docData.getType(), titleAnalyzer);
-        addAnalyzedFieldIfNotNull(luceneDoc, "graphic", docData.getGraphic(), textAnalyzer);
-
+        addAnalyzedFieldIfNotNull(luceneDoc, "author", docData.getAuthor(), authorAnalyzer);
+        addAnalyzedFieldIfNotNull(luceneDoc, "section", docData.getSection(), sectionAnalyzer);
+        addAnalyzedFieldIfNotNull(luceneDoc, "type", docData.getType(), typeAnalyzer);
+        addAnalyzedFieldIfNotNull(luceneDoc, "graphic", docData.getGraphic(), graphicAnalyzer);
+    
         indexWriter.addDocument(luceneDoc);
     }
 

@@ -26,4 +26,8 @@ public class DocumentData {
     // LAT
     private String type;
     private String graphic;
+
+    // FT
+    private String profile;
+    private String pub;
 }

@@ -1,4 +1,3 @@
-// TopicParser.java
 package com.group6.searchengine.parsers;
 
 import java.io.BufferedReader;
@@ -24,7 +23,7 @@ public class TopicParser {
 
                 if (line.startsWith("<top>")) {
                     currentTopic = new TopicData();
-                    contentBuilder.setLength(0); // Reset builder for new topic
+                    contentBuilder.setLength(0);
                 } else if (line.startsWith("<num>")) {
                     if (currentTopic != null) {
                         currentTopic.setNumber(line.replace("<num> Number: ", "").trim());
@@ -45,7 +44,7 @@ public class TopicParser {
                         currentTopic.setDescription(contentBuilder.toString().replace("Description: ", "").trim());
                     }
                 }
-                if (line != null && line.startsWith("<narr>")) { // Handle `<narr>` after `<desc>`
+                if (line != null && line.startsWith("<narr>")) {
                     if (currentTopic != null) {
                         contentBuilder.setLength(0);
                         while ((line = reader.readLine()) != null && !line.startsWith("</top>")) {
@@ -58,10 +57,10 @@ public class TopicParser {
                     }
                 }
 
-                if (line != null && line.startsWith("</top>")) { // End of topic
+                if (line != null && line.startsWith("</top>")) {
                     if (currentTopic != null) {
                         topics.add(currentTopic);
-                        currentTopic = null; // Reset for next topic
+                        currentTopic = null;
                     }
                 }
             }

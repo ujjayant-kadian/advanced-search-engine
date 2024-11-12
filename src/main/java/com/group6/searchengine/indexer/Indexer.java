@@ -99,7 +99,7 @@ public class Indexer {
     public void indexFT(File ftDirectory) throws IOException {
         FTParser ftParser = new FTParser();
 
-        ftParser.parse(ftDirectory, this::indexDocument);
+        ftParser.parse(ftDirectory, this::indexDocumentFT);
     }
 
     public void indexDocument(DocumentData docData) throws IOException {

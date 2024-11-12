@@ -29,8 +29,5 @@ public class DocumentData {
 
     // FT
     private String profile;
-    private String headline;
-    private String byline;
     private String pub;
-    private String page;
 }

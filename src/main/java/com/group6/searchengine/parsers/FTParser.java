@@ -1,20 +1,24 @@
 package com.group6.searchengine.parsers;
 
-import com.group6.searchengine.data.DocumentData;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.MalformedInputException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.charset.MalformedInputException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import com.group6.searchengine.data.DocumentData;
 
 public class FTParser implements DatasetParser {
 
@@ -24,54 +28,19 @@ public class FTParser implements DatasetParser {
         ENTITY_MAP.put("amp", "&");
         ENTITY_MAP.put("gt", ">");
         ENTITY_MAP.put("lt", "<");
-        ENTITY_MAP.put("AElig", "Æ");
-        ENTITY_MAP.put("ap", "'");
-        ENTITY_MAP.put("deg", "°");
-        ENTITY_MAP.put("egrave", "è");
-        ENTITY_MAP.put("eacute", "é");
-        ENTITY_MAP.put("oacute", "ó");
-        ENTITY_MAP.put("ubreve", "ŭ");
-        ENTITY_MAP.put("Ubreve", "Ŭ");
-        ENTITY_MAP.put("egs", "≥");
-        ENTITY_MAP.put("els", "≤");
-        ENTITY_MAP.put("percnt", "%");
-        ENTITY_MAP.put("pound", "£");
-        ENTITY_MAP.put("yen", "¥");
-        ENTITY_MAP.put("agr", "α");
-        ENTITY_MAP.put("bgr", "β");
-        ENTITY_MAP.put("dgr", "δ");
-        ENTITY_MAP.put("egr", "ε");
-        ENTITY_MAP.put("ggr", "γ");
-        ENTITY_MAP.put("Ggr", "Γ");
-        ENTITY_MAP.put("kgr", "κ");
-        ENTITY_MAP.put("lgr", "λ");
-        ENTITY_MAP.put("mgr", "μ");
-        ENTITY_MAP.put("pgr", "π");
-        ENTITY_MAP.put("rgr", "ρ");
-        ENTITY_MAP.put("sgr", "σ");
-        ENTITY_MAP.put("tgr", "τ");
-        ENTITY_MAP.put("xgr", "χ");
-        ENTITY_MAP.put("zgr", "ζ");
-        ENTITY_MAP.put("eegr", "η");
-        ENTITY_MAP.put("khgr", "χ");
-        ENTITY_MAP.put("phgr", "φ");
-        ENTITY_MAP.put("thgr", "θ");
-        ENTITY_MAP.put("ohm", "Ω");
-        ENTITY_MAP.put("Bgr", "Β");
-        ENTITY_MAP.put("Ngr", "Ν");
-        ENTITY_MAP.put("EEgr", "Η");
-        ENTITY_MAP.put("OHgr", "Ω");
-        ENTITY_MAP.put("PSgr", "Ψ");
-        ENTITY_MAP.put("Omacr", "Ō");
     }
 
     @Override
     public void parse(File ftDirectory, DocumentConsumer consumer) throws IOException {
-        System.out.println("Parsing FT Dataset");
-        for (File file : ftDirectory.listFiles()) {
-            if(file.isDirectory()) {
-                parse(file, consumer);
-            } else if (file.isFile() && !file.getName().equals("readfrcg.txt") && !file.getName().equals("readmeft.txt")) {
+        traverseDirectory(ftDirectory, consumer);
+    }
+
+    private void traverseDirectory(File directory, DocumentConsumer consumer) throws IOException {
+        for (File file : directory.listFiles()) {
+            if (file.isDirectory()) {
+                System.out.println("Parsing ft directory: " + file.getName());
+                traverseDirectory(file, consumer);
+            } else if (file.isFile() && file.getName().startsWith("ft")) {
                 parseFTFile(file, consumer);
             }
         }
@@ -93,7 +62,7 @@ public class FTParser implements DatasetParser {
             System.err.println("Encoding error reading file: " + ftFile.getName());
             return;
         }
-        // Replacing special characters with actual symbols for indexing
+
         fileContent = replaceSpecialCharacters(fileContent);
 
         Document doc = Jsoup.parse(fileContent, "", org.jsoup.parser.Parser.xmlParser());
@@ -101,18 +70,13 @@ public class FTParser implements DatasetParser {
         for (Element element : doc.select("DOC")) {
             DocumentData docData = new DocumentData();
 
-            // Extracting required fields with null checking for missing tags
             docData.setDocNo(getOrNull(element, "DOCNO"));
             docData.setProfile(getOrNull(element, "PROFILE"));
-            docData.setDate(getOrNull(element, "DATE"));
-            docData.setHeadline(getOrNull(element, "HEADLINE"));
-            docData.setByline(getOrNull(element, "BYLINE"));
-
-            String rawText = element.select("TEXT").text();
-            docData.setText(cleanTextOrNull(rawText));
-
+            docData.setDate(extractDateFromHeadline(getOrNull(element, "HEADLINE")));
+            docData.setTitle(extractTitleFromHeadline(getOrNull(element, "HEADLINE")));
+            docData.setAuthor(parseByline(getOrNull(element, "BYLINE")));
+            docData.setText(getOrNull(element, "TEXT"));
             docData.setPub(getOrNull(element, "PUB"));
-            docData.setPub(getOrNull(element, "PAGE"));
 
             consumer.consume(docData);
         }
@@ -133,29 +97,61 @@ public class FTParser implements DatasetParser {
 
     private String getOrNull(Element element, String tagName) {
         String content = element.select(tagName).text();
-        return content.isEmpty() ? null : content;
+        return content.isEmpty() ? null : content.trim().replaceAll("\\s{2,}", " ");
     }
 
-    private String parseFieldOrNull(Element element, String cssQuery) {
-        Element fieldElement = element.selectFirst(cssQuery);
-        return (fieldElement == null || fieldElement.text().isEmpty()) ? null : fieldElement.text();
-    }
-
-    private String cleanTextOrNull(String content) {
-        if (content == null) return null;
-        content = cleanText(content);
-        return content.isEmpty() ? null : content;
-    }
-
-    private String cleanText(String content) {
-        if (content == null) {
-            return "";
+    private String extractDateFromHeadline(String headline) {
+        if (headline == null) {
+            return null;
         }
-        content = content.replaceAll("\\[\\w+\\]", "");
-        content = content.replaceAll("<F P=\\d+>.*?</F>", "");
-        content = content.replaceAll("(?m)^Language:\\s*.*$", "");
-        content = content.replaceAll("(?m)^Article Type:\\s*.*$", "");
-        return content.trim().replaceAll("\\s{2,}", " ");
+    
+        Pattern datePattern = Pattern.compile("\\b(\\d{1,2})\\s+(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)\\s+(\\d{2,4})\\b", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = datePattern.matcher(headline);
+    
+        if (matcher.find()) {
+            String day = matcher.group(1);
+            String month = matcher.group(2);
+            String year = matcher.group(3);
+    
+            if (year.length() == 2) {
+                int yearNum = Integer.parseInt(year);
+                year = (yearNum > 50 ? "19" : "20") + year; // Assuming "50" as the cutoff year for 19xx or 20xx
+            }
+    
+            try {
+                String inputDate = day + " " + month.toUpperCase(Locale.ENGLISH) + " " + year;
+                SimpleDateFormat inputFormat = new SimpleDateFormat("d MMM yyyy", Locale.ENGLISH);
+                Date date = inputFormat.parse(inputDate);
+    
+                SimpleDateFormat outputFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH);
+                return outputFormat.format(date);
+            } catch (ParseException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+    
+        return null; // No valid date found
+    }
+
+    private String extractTitleFromHeadline(String headline) {
+        if (headline == null) {
+            return null;
+        }
+    
+        int index = headline.indexOf("/ ");
+        if (index != -1 && index + 2 < headline.length()) {
+            return headline.substring(index + 2).trim();
+        }
+    
+        return headline.trim();
+    }
+
+    private String parseByline(String byline) {
+        if (byline == null) {
+            return null;
+        }
+        return byline.replaceFirst("(?i)^(By|From)\\s+", "").trim();
     }
 
 }

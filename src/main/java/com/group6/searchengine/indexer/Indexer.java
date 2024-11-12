@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
@@ -26,8 +27,8 @@ import com.group6.searchengine.analyzers.LowercaseAnalyzer;
 import com.group6.searchengine.data.DocumentData;
 import com.group6.searchengine.parsers.FBISParser;
 import com.group6.searchengine.parsers.FR94Parser;
-import com.group6.searchengine.parsers.LATimesParser;
 import com.group6.searchengine.parsers.FTParser;
+import com.group6.searchengine.parsers.LATimesParser;
 
 public class Indexer {
 
@@ -47,6 +48,8 @@ public class Indexer {
     private Analyzer agencyAnalyzer;
     private Analyzer actionAnalyzer;
     private Analyzer supplementaryAnalyzer;
+    private Analyzer profileAnalyzer;
+    private Analyzer pubAnalyzer;
 
 
     public Indexer(String indexPath) throws IOException {
@@ -71,6 +74,8 @@ public class Indexer {
         this.agencyAnalyzer = new LowercaseAnalyzer();
         this.actionAnalyzer = new EnglishAnalyzer();
         this.supplementaryAnalyzer = new EnglishAnalyzer();
+        this.profileAnalyzer = new KeywordAnalyzer();
+        this.pubAnalyzer = new LowercaseAnalyzer();
     }
 
     public void indexFBIS(File fbisDirectory) throws IOException {
@@ -152,14 +157,13 @@ public class Indexer {
         Document luceneDoc = new Document();
 
         luceneDoc.add(new StringField("docNo", docData.getDocNo(), Field.Store.YES));
-
-        addFieldIfNotNull(luceneDoc, "profile", docData.getProfile());
-        addFieldIfNotNull(luceneDoc, "date", docData.getDate());
-        addAnalyzedFieldIfNotNull(luceneDoc, "headline", docData.getHeadline(), textAnalyzer);
-        addAnalyzedFieldIfNotNull(luceneDoc, "byline", docData.getByline(), textAnalyzer);
+        
+        addAnalyzedFieldIfNotNull(luceneDoc, "profile", docData.getProfile(), profileAnalyzer);
+        addAnalyzedFieldIfNotNull(luceneDoc, "date", docData.getDate(), dateAnalyzer);
+        addAnalyzedFieldIfNotNull(luceneDoc, "title", docData.getTitle(), titleAnalyzer);
+        addAnalyzedFieldIfNotNull(luceneDoc, "author", docData.getAuthor(), authorAnalyzer);
         addAnalyzedFieldIfNotNull(luceneDoc, "text", docData.getText(), textAnalyzer);
-        addAnalyzedFieldIfNotNull(luceneDoc, "pub", docData.getPub(), titleAnalyzer);
-        addAnalyzedFieldIfNotNull(luceneDoc, "page", docData.getPage(), textAnalyzer);
+        addAnalyzedFieldIfNotNull(luceneDoc, "pub", docData.getPub(), pubAnalyzer);
 
         indexWriter.addDocument(luceneDoc);
     }
@@ -180,12 +184,6 @@ public class Indexer {
 
         String analyzedValue = String.join(" ", tokens);
         return new TextField(fieldName, analyzedValue, Field.Store.NO);
-    }
-
-    private void addFieldIfNotNull(Document luceneDoc, String fieldName, String fieldValue) {
-        if (fieldValue != null && !fieldValue.isEmpty()) {
-            luceneDoc.add(new StringField(fieldName, fieldValue, Field.Store.NO));
-        }
     }
 
     private void addAnalyzedFieldIfNotNull(Document luceneDoc, String fieldName, String fieldValue, Analyzer analyzer) throws IOException {
@@ -221,15 +219,17 @@ public class Indexer {
 
             // Index FBIS dataset
             indexer.indexFBIS(new File("assignment-2/fbis"));
-
+            
             // Index FR94 dataset
             indexer.indexFR94(new File("assignment-2/fr94"));
-
+            
             // Index LAT dataset
             indexer.indexLAT(new File("assignment-2/latimes"));
-
+            
             // Index FT dataset
             indexer.indexFT(new File("assignment-2/ft"));
+
+            System.out.println("Indexing Complete!");
 
             indexer.close();
         } catch (IOException e) {

@@ -14,7 +14,7 @@ class FTParserTest {
 
     @Test
     void testParseFTFile() {
-        File ftDirectory = new File("assignment-2/ft/ft911/ft911_1");
+        File ftDirectory = new File("assignment-2/ft/ft934/ft934_2");
         FTParser parser = new FTParser();
         String outputFilePath = "test-outputs/ft-parser.txt";
 
@@ -46,15 +46,13 @@ class FTParserTest {
                 writer.newLine();
                 writer.write("Date: " + documentData.getDate());
                 writer.newLine();
-                writer.write("Headline: " + documentData.getHeadline());
+                writer.write("Title: " + documentData.getTitle());
                 writer.newLine();
-                writer.write("By line: " + documentData.getByline());
+                writer.write("Author: " + documentData.getAuthor());
                 writer.newLine();
                 writer.write("Text: " + documentData.getText());
                 writer.newLine();
                 writer.write("Pub: " + documentData.getPub());
-                writer.newLine();
-                writer.write("Page: " + documentData.getPage());
                 writer.newLine();
                 writer.write("--------------------------------------------------");
                 writer.newLine();

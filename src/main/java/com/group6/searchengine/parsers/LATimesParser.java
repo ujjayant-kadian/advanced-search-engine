@@ -1,10 +1,5 @@
 package com.group6.searchengine.parsers;
 
-import com.group6.searchengine.data.DocumentData;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.MalformedInputException;
@@ -12,6 +7,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+
+import com.group6.searchengine.data.DocumentData;
 
 public class LATimesParser implements DatasetParser {
 
@@ -83,15 +84,15 @@ public class LATimesParser implements DatasetParser {
 
     private String getFieldContent(Element element, String tagName) {
         Element fieldElement = element.selectFirst(tagName);
-    if (fieldElement == null) {
-        return null;
-    }
+        if (fieldElement == null) {
+            return null;
+        }
 
-    String content = fieldElement.select("P").isEmpty()
-            ? fieldElement.text()
-            : fieldElement.select("P").text();
+        String content = fieldElement.select("P").isEmpty()
+                ? fieldElement.text()
+                : fieldElement.select("P").text();
 
-    return cleanText(content);
+        return cleanText(content);
     }
 
     private String parseByline(String byline) {

@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
-import com.group6.searchengine.data.TopicData;;;
+import com.group6.searchengine.data.TopicData;
 
 class TopicParserTest {
 

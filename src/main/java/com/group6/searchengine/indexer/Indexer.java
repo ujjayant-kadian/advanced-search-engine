@@ -102,7 +102,7 @@ public class Indexer {
         ftParser.parse(ftDirectory, this::indexDocumentFT);
     }
 
-    public void indexDocument(DocumentData docData) throws IOException {
+    private void indexDocument(DocumentData docData) throws IOException {
         Document luceneDoc = new Document();
 
         luceneDoc.add(new StringField("docNo", docData.getDocNo(), Field.Store.YES));
@@ -119,7 +119,7 @@ public class Indexer {
         indexWriter.addDocument(luceneDoc);
     }
 
-    public void indexDocumentFR94(DocumentData docData) throws IOException {
+    private void indexDocumentFR94(DocumentData docData) throws IOException {
         Document luceneDoc = new Document();
 
         luceneDoc.add(new StringField("docNo", docData.getDocNo(), Field.Store.YES));
@@ -136,7 +136,7 @@ public class Indexer {
         indexWriter.addDocument(luceneDoc);
     }
 
-    public void indexDocumentLAT(DocumentData docData) throws IOException {
+    private void indexDocumentLAT(DocumentData docData) throws IOException {
         Document luceneDoc = new Document();
 
         luceneDoc.add(new StringField("docNo", docData.getDocNo(), Field.Store.YES));
@@ -153,7 +153,7 @@ public class Indexer {
         indexWriter.addDocument(luceneDoc);
     }
 
-    public void indexDocumentFT(DocumentData docData) throws IOException {
+    private void indexDocumentFT(DocumentData docData) throws IOException {
         Document luceneDoc = new Document();
 
         luceneDoc.add(new StringField("docNo", docData.getDocNo(), Field.Store.YES));
@@ -213,27 +213,4 @@ public class Indexer {
         Files.delete(dir.toPath());
     }
 
-    public static void main(String[] args) {
-        try {
-            Indexer indexer = new Indexer("index/");
-
-            // Index FBIS dataset
-            indexer.indexFBIS(new File("assignment-2/fbis"));
-            
-            // Index FR94 dataset
-            indexer.indexFR94(new File("assignment-2/fr94"));
-            
-            // Index LAT dataset
-            indexer.indexLAT(new File("assignment-2/latimes"));
-            
-            // Index FT dataset
-            indexer.indexFT(new File("assignment-2/ft"));
-
-            System.out.println("Indexing Complete!");
-
-            indexer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }

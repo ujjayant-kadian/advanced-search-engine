@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +31,24 @@ public class SearchEngine {
     private static final String RESULTS_DIR = "results/";
 
     public void searchWithDifferentAnalyzers(String indexDir, List<Pair<String, String>> queries, QueryType queryType) throws Exception {
-        String[] fields = {"title", "text", "abs"}; // Fields to search
+        String[] fields = {
+            "title", 
+            "text", 
+            "abs", 
+            "date", 
+            "author", 
+            "language", 
+            "region", 
+            "usDept", 
+            "agency", 
+            "action", 
+            "supplementary", 
+            "type", 
+            "graphic", 
+            "profile", 
+            "pub",
+            "section"
+        }; // Fields to search
     
         try (FSDirectory directory = FSDirectory.open(Paths.get(indexDir));
              DirectoryReader reader = DirectoryReader.open(directory)) {
@@ -46,11 +64,23 @@ public class SearchEngine {
     private void performSearch(IndexSearcher searcher, List<Pair<String, String>> queriesWithNumbers, String[] fields, 
                            QueryFormation.QueryType queryType, String scoringApproach) throws Exception {
                             
-        Map<String, BM25Similarity> fieldSpecificBM25 = Map.of(
-            "title", new BM25Similarity(1.5f, 0.3f),
-            "text", new BM25Similarity(1.2f, 0.75f),
-            "abs", new BM25Similarity(1.7f, 0.5f)
-        );
+        Map<String, BM25Similarity> fieldSpecificBM25 = new HashMap<>();
+        fieldSpecificBM25.put("title", new BM25Similarity(1.5f, 0.3f));
+        fieldSpecificBM25.put("text", new BM25Similarity(1.2f, 0.75f));
+        fieldSpecificBM25.put("abs", new BM25Similarity(1.7f, 0.5f));
+        fieldSpecificBM25.put("date", new BM25Similarity(1.0f, 0.6f));
+        fieldSpecificBM25.put("author", new BM25Similarity(1.0f, 0.5f));
+        fieldSpecificBM25.put("language", new BM25Similarity(1.0f, 0.3f));
+        fieldSpecificBM25.put("region", new BM25Similarity(1.2f, 0.4f));
+        fieldSpecificBM25.put("usDept", new BM25Similarity(1.3f, 0.5f));
+        fieldSpecificBM25.put("agency", new BM25Similarity(1.3f, 0.5f));
+        fieldSpecificBM25.put("action", new BM25Similarity(1.2f, 0.4f));
+        fieldSpecificBM25.put("supplementary", new BM25Similarity(1.1f, 0.5f));
+        fieldSpecificBM25.put("type", new BM25Similarity(1.1f, 0.4f));
+        fieldSpecificBM25.put("graphic", new BM25Similarity(1.0f, 0.3f));
+        fieldSpecificBM25.put("profile", new BM25Similarity(1.1f, 0.3f));
+        fieldSpecificBM25.put("pub", new BM25Similarity(1.2f, 0.4f));
+        fieldSpecificBM25.put("section", new BM25Similarity(1.4f, 0.5f));
 
         if ("BM25".equalsIgnoreCase(scoringApproach)) {
             searcher.setSimilarity(new FieldSpecificBM25Similarity(fieldSpecificBM25));
@@ -65,11 +95,23 @@ public class SearchEngine {
                 resultsDir.mkdirs();
             }
 
-        Map<String, Float> fieldBoosts = Map.of(
-                "title", 2.0f,
-                "text", 1.0f,
-                "abs", 1.5f
-            );
+        Map<String, Float> fieldBoosts = new HashMap<>();
+        fieldBoosts.put("title", 2.0f);
+        fieldBoosts.put("text", 1.5f);
+        fieldBoosts.put("abstract", 1.2f);
+        fieldBoosts.put("date", 0.8f);
+        fieldBoosts.put("author", 0.5f);
+        fieldBoosts.put("language", 0.3f);
+        fieldBoosts.put("region", 0.3f);
+        fieldBoosts.put("usDept", 0.3f);
+        fieldBoosts.put("agency", 0.3f);
+        fieldBoosts.put("action", 0.3f);
+        fieldBoosts.put("supplementary", 0.3f);
+        fieldBoosts.put("type", 0.3f);
+        fieldBoosts.put("graphic", 0.3f);
+        fieldBoosts.put("profile", 0.3f);
+        fieldBoosts.put("pub", 0.3f);
+        fieldBoosts.put("section", 0.8f);
 
         try (BufferedWriter writer = new BufferedWriter(
                 new FileWriter(RESULTS_DIR + queryType + "_" + scoringApproach + "_results.txt"))) {

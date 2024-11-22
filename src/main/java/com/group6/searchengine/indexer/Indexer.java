@@ -9,7 +9,6 @@ import java.util.List;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
@@ -67,15 +66,15 @@ public class Indexer {
         this.dateAnalyzer = new DateAnalyzer();
         this.languageAnalyzer = new LowercaseAnalyzer();
         this.regionAnalyzer = new LowercaseAnalyzer();
-        this.sectionAnalyzer = new StandardAnalyzer();
-        this.typeAnalyzer = new StandardAnalyzer();
+        this.sectionAnalyzer = new EnglishAnalyzer();
+        this.typeAnalyzer = new EnglishAnalyzer();
         this.graphicAnalyzer = new EnglishAnalyzer();
-        this.usDeptAnalyzer = new LowercaseAnalyzer();
-        this.agencyAnalyzer = new LowercaseAnalyzer();
+        this.usDeptAnalyzer = new EnglishAnalyzer();
+        this.agencyAnalyzer = new EnglishAnalyzer();
         this.actionAnalyzer = new EnglishAnalyzer();
         this.supplementaryAnalyzer = new EnglishAnalyzer();
-        this.profileAnalyzer = new KeywordAnalyzer();
-        this.pubAnalyzer = new LowercaseAnalyzer();
+        this.profileAnalyzer = new LowercaseAnalyzer();
+        this.pubAnalyzer = new EnglishAnalyzer();
     }
 
     public void indexFBIS(File fbisDirectory) throws IOException {

@@ -1,0 +1,125 @@
+##############################################
+Cleaning up the trec_eval_scores directory...
+##############################################
+Running Lucene Search Engine...
+Cleaning results folder!
+Starting Indexing Process...
+Cleaning index folder!
+Parsing FBIS Dataset
+Parsing fr94 directory: 03
+Parsing fr94 directory: 10
+Parsing fr94 directory: 09
+Parsing fr94 directory: 05
+Parsing fr94 directory: 08
+Parsing fr94 directory: 01
+Parsing fr94 directory: 12
+Parsing fr94 directory: 02
+Parsing fr94 directory: 07
+Parsing fr94 directory: 06
+Parsing fr94 directory: 04
+Parsing fr94 directory: 11
+Parsing LA Times Dataset
+Parsing ft directory: ft924
+Parsing ft directory: ft921
+Parsing ft directory: ft934
+Parsing ft directory: ft943
+Parsing ft directory: ft931
+Parsing ft directory: ft941
+Parsing ft directory: ft923
+Parsing ft directory: ft932
+Parsing ft directory: ft922
+Parsing ft directory: ft944
+Parsing ft directory: ft942
+Parsing ft directory: ft933
+Parsing ft directory: ft911
+Indexing Complete!
+Parsing Topics...
+Parsed 50 topics.
+Processing Query Type: TITLE_BASED
+Processing Query Type: DESCRIPTION_BASED
+Processing Query Type: COMBINED_TITLE_DESCRIPTION
+Processing Query Type: BEST_INFO_WORDS
+Processing Query Type: NARRATIVE_FOCUSED
+Processing Query Type: HYBRID
+Processing Query Type: SYNONYM_EXPANDED
+Processing Query Type: BOOLEAN_QUERY_BUILDER
+Search Process Complete! Results stored in 'results/' directory.
+##############################################
+Running trec_eval on result files...
+Stored trec_eval scores for BEST_INFO_WORDS_BM25_results.txt in trec_eval_scores/BEST_INFO_WORDS_results.txt_BM25_scores.txt
+Stored trec_eval scores for BEST_INFO_WORDS_HYBRID_results.txt in trec_eval_scores/BEST_INFO_WORDS_results.txt_HYBRID_scores.txt
+Stored trec_eval scores for BEST_INFO_WORDS_VSM_results.txt in trec_eval_scores/BEST_INFO_WORDS_results.txt_VSM_scores.txt
+Stored trec_eval scores for BOOLEAN_QUERY_BUILDER_BM25_results.txt in trec_eval_scores/BOOLEAN_QUERY_BUILDER_results.txt_BM25_scores.txt
+Stored trec_eval scores for BOOLEAN_QUERY_BUILDER_HYBRID_results.txt in trec_eval_scores/BOOLEAN_QUERY_BUILDER_results.txt_HYBRID_scores.txt
+Stored trec_eval scores for BOOLEAN_QUERY_BUILDER_VSM_results.txt in trec_eval_scores/BOOLEAN_QUERY_BUILDER_results.txt_VSM_scores.txt
+Stored trec_eval scores for COMBINED_TITLE_DESCRIPTION_BM25_results.txt in trec_eval_scores/COMBINED_TITLE_DESCRIPTION_results.txt_BM25_scores.txt
+Stored trec_eval scores for COMBINED_TITLE_DESCRIPTION_HYBRID_results.txt in trec_eval_scores/COMBINED_TITLE_DESCRIPTION_results.txt_HYBRID_scores.txt
+Stored trec_eval scores for COMBINED_TITLE_DESCRIPTION_VSM_results.txt in trec_eval_scores/COMBINED_TITLE_DESCRIPTION_results.txt_VSM_scores.txt
+Stored trec_eval scores for DESCRIPTION_BASED_BM25_results.txt in trec_eval_scores/DESCRIPTION_BASED_results.txt_BM25_scores.txt
+Stored trec_eval scores for DESCRIPTION_BASED_HYBRID_results.txt in trec_eval_scores/DESCRIPTION_BASED_results.txt_HYBRID_scores.txt
+Stored trec_eval scores for DESCRIPTION_BASED_VSM_results.txt in trec_eval_scores/DESCRIPTION_BASED_results.txt_VSM_scores.txt
+Stored trec_eval scores for HYBRID_BM25_results.txt in trec_eval_scores/HYBRID_results.txt_BM25_scores.txt
+Stored trec_eval scores for HYBRID_HYBRID_results.txt in trec_eval_scores/HYBRID_results.txt_HYBRID_scores.txt
+Stored trec_eval scores for HYBRID_VSM_results.txt in trec_eval_scores/HYBRID_results.txt_VSM_scores.txt
+Stored trec_eval scores for NARRATIVE_FOCUSED_BM25_results.txt in trec_eval_scores/NARRATIVE_FOCUSED_results.txt_BM25_scores.txt
+Stored trec_eval scores for NARRATIVE_FOCUSED_HYBRID_results.txt in trec_eval_scores/NARRATIVE_FOCUSED_results.txt_HYBRID_scores.txt
+Stored trec_eval scores for NARRATIVE_FOCUSED_VSM_results.txt in trec_eval_scores/NARRATIVE_FOCUSED_results.txt_VSM_scores.txt
+Stored trec_eval scores for SYNONYM_EXPANDED_BM25_results.txt in trec_eval_scores/SYNONYM_EXPANDED_results.txt_BM25_scores.txt
+Stored trec_eval scores for SYNONYM_EXPANDED_HYBRID_results.txt in trec_eval_scores/SYNONYM_EXPANDED_results.txt_HYBRID_scores.txt
+Stored trec_eval scores for SYNONYM_EXPANDED_VSM_results.txt in trec_eval_scores/SYNONYM_EXPANDED_results.txt_VSM_scores.txt
+Stored trec_eval scores for TITLE_BASED_BM25_results.txt in trec_eval_scores/TITLE_BASED_results.txt_BM25_scores.txt
+Stored trec_eval scores for TITLE_BASED_HYBRID_results.txt in trec_eval_scores/TITLE_BASED_results.txt_HYBRID_scores.txt
+Stored trec_eval scores for TITLE_BASED_VSM_results.txt in trec_eval_scores/TITLE_BASED_results.txt_VSM_scores.txt
+##############################################
+Analyzing trec_eval scores to find the best query formation technique...
+Technique: BEST_INFO_WORDS_results.txt_scores.txt, Scoring Method: BM25, MAP: 0.2100
+---------------------------------------------------
+Technique: BEST_INFO_WORDS_results.txt_scores.txt, Scoring Method: HYBRID, MAP: 0.2072
+---------------------------------------------------
+Technique: BEST_INFO_WORDS_results.txt_scores.txt, Scoring Method: VSM, MAP: 0.1207
+---------------------------------------------------
+Technique: BOOLEAN_QUERY_BUILDER_results.txt_scores.txt, Scoring Method: BM25, MAP: 0.2879
+---------------------------------------------------
+Technique: BOOLEAN_QUERY_BUILDER_results.txt_scores.txt, Scoring Method: HYBRID, MAP: 0.2850
+---------------------------------------------------
+Technique: BOOLEAN_QUERY_BUILDER_results.txt_scores.txt, Scoring Method: VSM, MAP: 0.1712
+---------------------------------------------------
+Technique: COMBINED_TITLE_DESCRIPTION_results.txt_scores.txt, Scoring Method: BM25, MAP: 0.2743
+---------------------------------------------------
+Technique: COMBINED_TITLE_DESCRIPTION_results.txt_scores.txt, Scoring Method: HYBRID, MAP: 0.2721
+---------------------------------------------------
+Technique: COMBINED_TITLE_DESCRIPTION_results.txt_scores.txt, Scoring Method: VSM, MAP: 0.1676
+---------------------------------------------------
+Technique: DESCRIPTION_BASED_results.txt_scores.txt, Scoring Method: BM25, MAP: 0.2292
+---------------------------------------------------
+Technique: DESCRIPTION_BASED_results.txt_scores.txt, Scoring Method: HYBRID, MAP: 0.2279
+---------------------------------------------------
+Technique: DESCRIPTION_BASED_results.txt_scores.txt, Scoring Method: VSM, MAP: 0.1555
+---------------------------------------------------
+Technique: HYBRID_results.txt_scores.txt, Scoring Method: BM25, MAP: 0.2622
+---------------------------------------------------
+Technique: HYBRID_results.txt_scores.txt, Scoring Method: HYBRID, MAP: 0.2602
+---------------------------------------------------
+Technique: HYBRID_results.txt_scores.txt, Scoring Method: VSM, MAP: 0.1659
+---------------------------------------------------
+Technique: NARRATIVE_FOCUSED_results.txt_scores.txt, Scoring Method: BM25, MAP: 0.1126
+---------------------------------------------------
+Technique: NARRATIVE_FOCUSED_results.txt_scores.txt, Scoring Method: HYBRID, MAP: 0.1134
+---------------------------------------------------
+Technique: NARRATIVE_FOCUSED_results.txt_scores.txt, Scoring Method: VSM, MAP: 0.0863
+---------------------------------------------------
+Technique: SYNONYM_EXPANDED_results.txt_scores.txt, Scoring Method: BM25, MAP: 0.2066
+---------------------------------------------------
+Technique: SYNONYM_EXPANDED_results.txt_scores.txt, Scoring Method: HYBRID, MAP: 0.2056
+---------------------------------------------------
+Technique: SYNONYM_EXPANDED_results.txt_scores.txt, Scoring Method: VSM, MAP: 0.1455
+---------------------------------------------------
+Technique: TITLE_BASED_results.txt_scores.txt, Scoring Method: BM25, MAP: 0.2334
+---------------------------------------------------
+Technique: TITLE_BASED_results.txt_scores.txt, Scoring Method: HYBRID, MAP: 0.2261
+---------------------------------------------------
+Technique: TITLE_BASED_results.txt_scores.txt, Scoring Method: VSM, MAP: 0.1248
+---------------------------------------------------
+##############################################
+Best Query Formation Technique: BOOLEAN_QUERY_BUILDER_results.txt_scores.txt_BM25
+Mean Average Precision (MAP): 0.2879

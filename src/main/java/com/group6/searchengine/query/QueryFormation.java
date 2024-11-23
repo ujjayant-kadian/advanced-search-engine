@@ -130,7 +130,7 @@ public class QueryFormation {
                 System.err.println("Error parsing title: " + title);
             }
             if (titleQuery != null) {
-                booleanQuery.add(new BoostQuery(titleQuery, 4.0f), BooleanClause.Occur.SHOULD);
+                booleanQuery.add(new BoostQuery(titleQuery, 4.2f), BooleanClause.Occur.SHOULD);
             }
         }
     
@@ -142,7 +142,7 @@ public class QueryFormation {
                 System.err.println("Error parsing description: " + description);
             }
             if (descriptionQuery != null) {
-                booleanQuery.add(new BoostQuery(descriptionQuery, 1.7f), BooleanClause.Occur.SHOULD);
+                booleanQuery.add(new BoostQuery(descriptionQuery, 1.9f), BooleanClause.Occur.SHOULD);
             }
         }
     
@@ -167,7 +167,9 @@ public class QueryFormation {
                 System.err.println("Error parsing irrelevant narr: " + irrelevantNarr);
             }
             if (irrelevantQuery != null) {
-                booleanQuery.add(new BoostQuery(irrelevantQuery, 2.0f), BooleanClause.Occur.FILTER);
+                // booleanQuery.add(irrelevantQuery, BooleanClause.Occur.FILTER);
+                // booleanQuery.add(irrelevantQuery, BooleanClause.Occur.MUST_NOT);
+                booleanQuery.add(new BoostQuery(irrelevantQuery, 0.01f), BooleanClause.Occur.SHOULD);
             }
         }
     
@@ -178,14 +180,13 @@ public class QueryFormation {
         return booleanQuery.build();
     }    
     
-
     private String expandWithSynonyms(TopicData topic) {
-        List<String> highImpactTerms = extractHighImpactTerms(topic, 1.0, Integer.MAX_VALUE); // No limit on term count
+        List<String> highImpactTerms = extractHighImpactTerms(topic, 0.5, Integer.MAX_VALUE); // No limit on term count
         return expandTermsWithSynonyms(highImpactTerms, 3, 30);
     }
 
     private String extractKeyPhrases(TopicData topic) {
-        List<String> highImpactTerms = extractHighImpactTerms(topic, 1.0, 5); // Top 5 terms
+        List<String> highImpactTerms = extractHighImpactTerms(topic, 0.5, 5); // Top 5 terms
         return expandTermsWithSynonyms(highImpactTerms, 3, 20);
     }
 

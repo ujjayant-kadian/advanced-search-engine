@@ -3,20 +3,18 @@ package com.group6.searchengine.search_engine;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.similarities.BM25Similarity;
 import org.apache.lucene.search.similarities.ClassicSimilarity;
 import org.apache.lucene.search.similarities.PerFieldSimilarityWrapper;
-import org.apache.lucene.store.FSDirectory;
 
 import com.group6.searchengine.query.QueryFormation;
 import com.group6.searchengine.query.QueryFormation.QueryType;
@@ -26,40 +24,35 @@ public class SearchEngine {
 
     private static final String RESULTS_DIR = "results/";
 
-    public void searchWithDifferentModels(String indexDir, List<Pair<String, Query>> queries, QueryType queryType) throws Exception {
+    public void searchWithDifferentModels(IndexReader reader, List<Pair<String, Query>> queries, QueryType queryType) throws Exception {
     
-        try (FSDirectory directory = FSDirectory.open(Paths.get(indexDir));
-             DirectoryReader reader = DirectoryReader.open(directory)) {
-    
-            IndexSearcher searcher = new IndexSearcher(reader);
-    
-            // Perform searches with both BM25 and VSM scoring approaches
-            performSearch(searcher, queries, queryType, "BM25");
-            performSearch(searcher, queries, queryType, "VSM");
-            performSearch(searcher, queries, queryType, "HYBRID");
-        }
+        IndexSearcher searcher = new IndexSearcher(reader);
+
+        performSearch(searcher, queries, queryType, "BM25");
+        performSearch(searcher, queries, queryType, "VSM");
+        performSearch(searcher, queries, queryType, "HYBRID");
     }
 
     private void performSearch(IndexSearcher searcher, List<Pair<String, Query>> queriesWithNumbers, 
                            QueryFormation.QueryType queryType, String scoringApproach) throws Exception {
                             
         Map<String, BM25Similarity> fieldSpecificBM25 = new HashMap<>();
-        fieldSpecificBM25.put("title", new BM25Similarity(1.5f, 0.3f));
-        fieldSpecificBM25.put("text", new BM25Similarity(1.2f, 0.75f));
-        fieldSpecificBM25.put("abs", new BM25Similarity(1.3f, 0.5f));
-        fieldSpecificBM25.put("date", new BM25Similarity(1.0f, 0.6f));
-        fieldSpecificBM25.put("author", new BM25Similarity(1.0f, 0.5f));
-        fieldSpecificBM25.put("language", new BM25Similarity(1.0f, 0.3f));
-        fieldSpecificBM25.put("region", new BM25Similarity(1.2f, 0.4f));
-        fieldSpecificBM25.put("usDept", new BM25Similarity(1.3f, 0.5f));
-        fieldSpecificBM25.put("agency", new BM25Similarity(1.3f, 0.5f));
-        fieldSpecificBM25.put("action", new BM25Similarity(1.2f, 0.4f));
+        fieldSpecificBM25.put("title", new BM25Similarity(1.2f, 0.2f));
+        fieldSpecificBM25.put("text", new BM25Similarity(1.1f, 0.7f));
+        fieldSpecificBM25.put("abstract", new BM25Similarity(1.5f, 0.5f));
+        fieldSpecificBM25.put("date", new BM25Similarity(1.2f, 0.2f));
+        fieldSpecificBM25.put("author", new BM25Similarity(1.2f, 0.2f));
+        fieldSpecificBM25.put("language", new BM25Similarity(1.2f, 0.2f));
+        fieldSpecificBM25.put("region", new BM25Similarity(1.2f, 0.2f));
+        fieldSpecificBM25.put("usDept", new BM25Similarity(1.2f, 0.2f));
+        fieldSpecificBM25.put("agency", new BM25Similarity(1.2f, 0.2f));
+        fieldSpecificBM25.put("action", new BM25Similarity(1.2f, 0.2f));
         fieldSpecificBM25.put("supplementary", new BM25Similarity(1.1f, 0.5f));
-        fieldSpecificBM25.put("type", new BM25Similarity(1.1f, 0.4f));
-        fieldSpecificBM25.put("graphic", new BM25Similarity(1.0f, 0.3f));
-        fieldSpecificBM25.put("profile", new BM25Similarity(1.1f, 0.3f));
-        fieldSpecificBM25.put("pub", new BM25Similarity(1.2f, 0.4f));
-        fieldSpecificBM25.put("section", new BM25Similarity(1.4f, 0.5f));
+        fieldSpecificBM25.put("type", new BM25Similarity(1.2f, 0.1f));
+        fieldSpecificBM25.put("graphic", new BM25Similarity(1.1f, 0.3f));
+        fieldSpecificBM25.put("profile", new BM25Similarity(1.0f, 0.1f));
+        fieldSpecificBM25.put("pub", new BM25Similarity(1.2f, 0.2f));
+        fieldSpecificBM25.put("section", new BM25Similarity(1.0f, 0.5f));
 
         switch (scoringApproach.toUpperCase()) {
             case "BM25" -> searcher.setSimilarity(new FieldSpecificBM25Similarity(fieldSpecificBM25));
@@ -67,7 +60,7 @@ public class SearchEngine {
             case "HYBRID" -> searcher.setSimilarity(new HybridSimilarity(
                     new FieldSpecificBM25Similarity(fieldSpecificBM25), 
                     new ClassicSimilarity(), 
-                    0.7, 0.3
+                    0.8, 0.2
                 ));
             default -> throw new IllegalArgumentException("Unsupported scoring approach: " + scoringApproach);
         }

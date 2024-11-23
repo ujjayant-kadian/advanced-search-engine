@@ -35,9 +35,9 @@ Parsing ft directory: ft911
 Indexing Complete!
 Parsing Topics...
 Parsed 50 topics.
-Processing Query Type: DESCRIPTION_BASED
-Processing Query Type: COMBINED_TITLE_DESCRIPTION
 Processing Query Type: TITLE_BASED
+Processing Query Type: COMBINED_TITLE_DESCRIPTION
+Processing Query Type: DESCRIPTION_BASED
 Processing Query Type: NARRATIVE_FOCUSED
 Processing Query Type: BEST_INFO_WORDS
 Processing Query Type: SYNONYM_EXPANDED
@@ -72,54 +72,54 @@ Stored trec_eval scores for TITLE_BASED_HYBRID_results.txt in trec_eval_scores/T
 Stored trec_eval scores for TITLE_BASED_VSM_results.txt in trec_eval_scores/TITLE_BASED_results.txt_VSM_scores.txt
 ##############################################
 Analyzing trec_eval scores to find the best query formation technique...
-Technique: BEST_INFO_WORDS_results.txt_scores.txt, Scoring Method: BM25, MAP: 0.1830
+Technique: BEST_INFO_WORDS_results.txt_scores.txt, Scoring Method: BM25, MAP: 0.1844
 ---------------------------------------------------
-Technique: BEST_INFO_WORDS_results.txt_scores.txt, Scoring Method: HYBRID, MAP: 0.1811
+Technique: BEST_INFO_WORDS_results.txt_scores.txt, Scoring Method: HYBRID, MAP: 0.1841
 ---------------------------------------------------
 Technique: BEST_INFO_WORDS_results.txt_scores.txt, Scoring Method: VSM, MAP: 0.1043
 ---------------------------------------------------
-Technique: BOOLEAN_QUERY_BUILDER_results.txt_scores.txt, Scoring Method: BM25, MAP: 0.2719
+Technique: BOOLEAN_QUERY_BUILDER_results.txt_scores.txt, Scoring Method: BM25, MAP: 0.2748
 ---------------------------------------------------
-Technique: BOOLEAN_QUERY_BUILDER_results.txt_scores.txt, Scoring Method: HYBRID, MAP: 0.2654
+Technique: BOOLEAN_QUERY_BUILDER_results.txt_scores.txt, Scoring Method: HYBRID, MAP: 0.2739
 ---------------------------------------------------
-Technique: BOOLEAN_QUERY_BUILDER_results.txt_scores.txt, Scoring Method: VSM, MAP: 0.1512
+Technique: BOOLEAN_QUERY_BUILDER_results.txt_scores.txt, Scoring Method: VSM, MAP: 0.1378
 ---------------------------------------------------
-Technique: COMBINED_TITLE_DESCRIPTION_results.txt_scores.txt, Scoring Method: BM25, MAP: 0.2509
+Technique: COMBINED_TITLE_DESCRIPTION_results.txt_scores.txt, Scoring Method: BM25, MAP: 0.2524
 ---------------------------------------------------
-Technique: COMBINED_TITLE_DESCRIPTION_results.txt_scores.txt, Scoring Method: HYBRID, MAP: 0.2482
+Technique: COMBINED_TITLE_DESCRIPTION_results.txt_scores.txt, Scoring Method: HYBRID, MAP: 0.2533
 ---------------------------------------------------
 Technique: COMBINED_TITLE_DESCRIPTION_results.txt_scores.txt, Scoring Method: VSM, MAP: 0.1382
 ---------------------------------------------------
-Technique: DESCRIPTION_BASED_results.txt_scores.txt, Scoring Method: BM25, MAP: 0.2060
+Technique: DESCRIPTION_BASED_results.txt_scores.txt, Scoring Method: BM25, MAP: 0.2066
 ---------------------------------------------------
-Technique: DESCRIPTION_BASED_results.txt_scores.txt, Scoring Method: HYBRID, MAP: 0.2080
+Technique: DESCRIPTION_BASED_results.txt_scores.txt, Scoring Method: HYBRID, MAP: 0.2085
 ---------------------------------------------------
 Technique: DESCRIPTION_BASED_results.txt_scores.txt, Scoring Method: VSM, MAP: 0.1266
 ---------------------------------------------------
-Technique: HYBRID_results.txt_scores.txt, Scoring Method: BM25, MAP: 0.2359
+Technique: HYBRID_results.txt_scores.txt, Scoring Method: BM25, MAP: 0.2377
 ---------------------------------------------------
-Technique: HYBRID_results.txt_scores.txt, Scoring Method: HYBRID, MAP: 0.2319
+Technique: HYBRID_results.txt_scores.txt, Scoring Method: HYBRID, MAP: 0.2376
 ---------------------------------------------------
 Technique: HYBRID_results.txt_scores.txt, Scoring Method: VSM, MAP: 0.1368
 ---------------------------------------------------
-Technique: NARRATIVE_FOCUSED_results.txt_scores.txt, Scoring Method: BM25, MAP: 0.1012
+Technique: NARRATIVE_FOCUSED_results.txt_scores.txt, Scoring Method: BM25, MAP: 0.1002
 ---------------------------------------------------
-Technique: NARRATIVE_FOCUSED_results.txt_scores.txt, Scoring Method: HYBRID, MAP: 0.1019
+Technique: NARRATIVE_FOCUSED_results.txt_scores.txt, Scoring Method: HYBRID, MAP: 0.1018
 ---------------------------------------------------
 Technique: NARRATIVE_FOCUSED_results.txt_scores.txt, Scoring Method: VSM, MAP: 0.0733
 ---------------------------------------------------
-Technique: SYNONYM_EXPANDED_results.txt_scores.txt, Scoring Method: BM25, MAP: 0.1856
+Technique: SYNONYM_EXPANDED_results.txt_scores.txt, Scoring Method: BM25, MAP: 0.1862
 ---------------------------------------------------
-Technique: SYNONYM_EXPANDED_results.txt_scores.txt, Scoring Method: HYBRID, MAP: 0.1876
+Technique: SYNONYM_EXPANDED_results.txt_scores.txt, Scoring Method: HYBRID, MAP: 0.1898
 ---------------------------------------------------
 Technique: SYNONYM_EXPANDED_results.txt_scores.txt, Scoring Method: VSM, MAP: 0.1197
 ---------------------------------------------------
-Technique: TITLE_BASED_results.txt_scores.txt, Scoring Method: BM25, MAP: 0.2220
+Technique: TITLE_BASED_results.txt_scores.txt, Scoring Method: BM25, MAP: 0.2274
 ---------------------------------------------------
-Technique: TITLE_BASED_results.txt_scores.txt, Scoring Method: HYBRID, MAP: 0.2115
+Technique: TITLE_BASED_results.txt_scores.txt, Scoring Method: HYBRID, MAP: 0.2223
 ---------------------------------------------------
 Technique: TITLE_BASED_results.txt_scores.txt, Scoring Method: VSM, MAP: 0.1073
 ---------------------------------------------------
 ##############################################
 Best Query Formation Technique: BOOLEAN_QUERY_BUILDER_results.txt_scores.txt_BM25
-Mean Average Precision (MAP): 0.2719
+Mean Average Precision (MAP): 0.2748

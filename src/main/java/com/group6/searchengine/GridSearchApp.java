@@ -30,7 +30,7 @@ public class GridSearchApp {
     private static final Map<String, BM25Similarity> FIELD_SPECIFIC_BM25 = createFieldSpecificBM25();
 
     public static void main(String[] args) throws Exception {
-        System.out.println("Starting Grid Search for Boost Optimization...");
+        System.out.println("Starting Grid Search for Optimization...");
         
         Map<String, List<Float>> boostRanges = createBoostRanges();
         Map<String, Float> constantBoosts = constantBoosts();
@@ -42,7 +42,8 @@ public class GridSearchApp {
             return;
         }
     
-        performGridSearch(boostRanges, constantBoosts, topics);
+        // performGridSearch(boostRanges, constantBoosts, topics);
+        evaluateBM25Combinations(topics);
     
         System.out.println("Grid Search Complete! Results stored in 'grid-search-results/' directory.");
     }
@@ -70,7 +71,7 @@ public class GridSearchApp {
 
     private static Map<String, List<Float>> createBoostRanges() {
         Map<String, List<Float>> boostRanges = new HashMap<>();
-        boostRanges.put("section", generateRange(0.01f, 0.1f, 0.01f));
+        // boostRanges.put("section", generateRange(0.01f, 0.1f, 0.01f));
         return boostRanges;
     }
 
@@ -91,7 +92,7 @@ public class GridSearchApp {
         constantBoosts.put("graphic", 0.01f);//best
         constantBoosts.put("profile", 0.001f);//best
         constantBoosts.put("pub", 0.01f);//best
-        // constantBoosts.put("section", 0.09f);//best
+        constantBoosts.put("section", 0.09f);//best
         return constantBoosts;
     }
 
@@ -167,6 +168,94 @@ public class GridSearchApp {
             }
         }
     }
+
+    private static void evaluateBM25Combinations(List<TopicData> topics) throws Exception {
+        File resultsDir = new File(RESULTS_DIR);
+        if (!resultsDir.exists()) {
+            resultsDir.mkdirs();
+        }
+
+        // Define BM25 parameter ranges
+        List<Float> k1Range = generateRange(1.0f, 1.5f, 0.1f); // Example range for k1
+        List<Float> bRange = generateRange(0.1f, 0.9f, 0.2f);  // Example range for b
+
+        // Define fields to optimize
+        List<String> fieldsToOptimize = List.of("section");
+
+        // Generate BM25 combinations for each field
+        for (String field : fieldsToOptimize) {
+            for (float k1 : k1Range) {
+                for (float b : bRange) {
+                    // Create a BM25 configuration for the current combination
+                    Map<String, BM25Similarity> bm25Configurations = createBM25Configuration(field, k1, b);
+
+                    // Evaluate this BM25 configuration
+                    evaluateBM25Configuration(bm25Configurations, topics, field, k1, b);
+                }
+            }
+        }
+    }
+
+    private static Map<String, BM25Similarity> createBM25Configuration(String field, float k1, float b) {
+        Map<String, BM25Similarity> fieldSpecificBM25 = new HashMap<>();
+        fieldSpecificBM25.put("title", new BM25Similarity(1.2f, 0.2f));
+        fieldSpecificBM25.put("text", new BM25Similarity(1.1f, 0.7f));
+        fieldSpecificBM25.put("abstract", new BM25Similarity(1.5f, 0.5f));
+        fieldSpecificBM25.put("date", new BM25Similarity(1.2f, 0.2f));
+        fieldSpecificBM25.put("author", new BM25Similarity(1.2f, 0.2f));
+        fieldSpecificBM25.put("language", new BM25Similarity(1.2f, 0.2f));
+        fieldSpecificBM25.put("region", new BM25Similarity(1.2f, 0.2f));
+        fieldSpecificBM25.put("usDept", new BM25Similarity(1.2f, 0.2f));
+        fieldSpecificBM25.put("agency", new BM25Similarity(1.2f, 0.2f));
+        fieldSpecificBM25.put("action", new BM25Similarity(1.2f, 0.2f));
+        fieldSpecificBM25.put("supplementary", new BM25Similarity(1.1f, 0.5f));
+        fieldSpecificBM25.put("type", new BM25Similarity(1.2f, 0.1f));
+        fieldSpecificBM25.put("graphic", new BM25Similarity(1.1f, 0.3f));
+        fieldSpecificBM25.put("profile", new BM25Similarity(1.0f, 0.1f));
+        fieldSpecificBM25.put("pub", new BM25Similarity(1.2f, 0.2f));
+        fieldSpecificBM25.put("section", new BM25Similarity(1.0f, 0.5f));
+
+        // Override the parameters for the specified field
+        fieldSpecificBM25.put(field, new BM25Similarity(k1, b));
+
+        return fieldSpecificBM25;
+    }
+
+    private static void evaluateBM25Configuration(Map<String, BM25Similarity> bm25Configurations,
+                                                List<TopicData> topics,
+                                                String field,
+                                                float k1,
+                                                float b) throws Exception {
+        System.out.println("Evaluating BM25 for field: " + field + " (k1=" + k1 + ", b=" + b + ")");
+
+        try (FSDirectory directory = FSDirectory.open(Paths.get(INDEX_DIR));
+                DirectoryReader reader = DirectoryReader.open(directory)) {
+
+            IndexSearcher searcher = new IndexSearcher(reader);
+            searcher.setSimilarity(new FieldSpecificBM25Similarity(bm25Configurations));
+
+            QueryFormation queryFormation = new QueryFormation("dict/");
+
+            List<Pair<String, Query>> queries = queryFormation.generateQueries(topics, QueryFormation.QueryType.BOOLEAN_QUERY_BUILDER);
+
+            File resultFile = new File(RESULTS_DIR + "bm25_" + field + "_k1_" + k1 + "_b_" + b + ".txt");
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(resultFile))) {
+                for (Pair<String, Query> queryPair : queries) {
+                    String topicNumber = queryPair.getLeft();
+                    Query query = queryPair.getRight();
+
+                    ScoreDoc[] hits = searcher.search(query, 1000).scoreDocs;
+
+                    for (int rank = 0; rank < hits.length; rank++) {
+                        ScoreDoc hit = hits[rank];
+                        String docNo = searcher.doc(hit.doc).get("docNo");
+                        writer.write(String.format("%s Q0 %s %d %.4f BM25%n", topicNumber, docNo, rank + 1, hit.score));
+                    }
+                }
+            }
+        }
+    }
+
 }
 class FieldSpecificBM25Similarity extends PerFieldSimilarityWrapper {
     private final BM25Similarity defaultSimilarity;

@@ -1,6 +1,7 @@
 package com.group6.searchengine;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -8,7 +9,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.store.FSDirectory;
 
 import com.group6.searchengine.data.TopicData;
 import com.group6.searchengine.indexer.Indexer;
@@ -49,29 +52,32 @@ public class SearchApp {
         QueryFormation queryFormation = new QueryFormation("dict/");
         queryFormation.calculateIDFScores(topics);
 
-        ExecutorService executorService = Executors.newFixedThreadPool(QueryType.values().length);
-        List<Future<?>> futures = new ArrayList<>();
+        try (FSDirectory directory = FSDirectory.open(Paths.get(indexPath));
+             DirectoryReader reader = DirectoryReader.open(directory)) {
         
-
-        SearchEngine searchEngine = new SearchEngine();
-        for (QueryType queryType : QueryType.values()) {
-            Future<?> future = executorService.submit(() -> {
-                try {
-                    System.out.println("Processing Query Type: " + queryType);
-                    List<Pair<String, Query>> queries = queryFormation.generateQueries(topics, queryType);
-                    searchEngine.searchWithDifferentModels(indexPath, queries, queryType);
-                } catch (Exception e) {
-                    System.err.println("Error processing query type: " + queryType);
-                    e.printStackTrace();
-                }
-            });
-            futures.add(future);
-        }
-        for (Future<?> future : futures) {
-            future.get();
-        }
+            ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+            List<Future<?>> futures = new ArrayList<>();
         
-        executorService.shutdown();
+            SearchEngine searchEngine = new SearchEngine();
+            for (QueryType queryType : QueryType.values()) {
+                Future<?> future = executorService.submit(() -> {
+                    try {
+                        System.out.println("Processing Query Type: " + queryType);
+                        List<Pair<String, Query>> queries = queryFormation.generateQueries(topics, queryType);
+                        searchEngine.searchWithDifferentModels(reader, queries, queryType); // Use shared reader
+                    } catch (Exception e) {
+                        System.err.println("Error processing query type: " + queryType);
+                        e.printStackTrace();
+                    }
+                });
+                futures.add(future);
+            }
+            for (Future<?> future : futures) {
+                future.get();
+            }
+        
+            executorService.shutdown();
+        }
         System.out.println("Search Process Complete! Results stored in 'results/' directory.");
     }
 

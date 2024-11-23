@@ -67,6 +67,9 @@
    ```
 2. Install dependencies using Maven:
    ```bash
+   mvn install:install-file -Dfile=libs/jwi-2.4.0.jar -DgroupId=edu.mit -DartifactId=jwi -Dversion=2.4.0 -Dpackaging=jar
+   ```
+   ```bash
    mvn clean install
    ```
 3. Modify the path to `TREC_EVAL` executable in `run_and_evaluate.sh`:

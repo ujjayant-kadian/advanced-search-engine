@@ -53,9 +53,9 @@
   - `com.group6.searchengine.analyzers`: Custom text analyzer for pre-processing.
 - `src/test/java/`: Contains test cases for various modules.
 - `resources/`:
-  - `topics`: Topic files for generating queries.
   - `custom-analyzer-data/`: Synonym and stopword files for the custom analyzer.
-  - `assignment-2/`: Dataset files (e.g., FBIS, LATimes, FR94).
+- `assignment-2/`: Dataset files (e.g., FBIS, LATimes, FR94).
+- `topics`: Topic files for generating queries.
 
 ---
 

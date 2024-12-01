@@ -82,7 +82,7 @@
 ### **6. Usage**
 #### **Indexing Documents and Query Evaluation**
 1. Edit the `topics` file to add or modify topics for querying.
-2. Place your datasets in the `assignment-2/` directory (you can get the datasets from (here)[https://drive.google.com/file/d/17KpMCaE34eLvdiTINqj1lmxSBSu8BtDP/view]).
+2. Place your datasets in the `assignment-2/` directory (you can get the datasets from [here](https://drive.google.com/file/d/17KpMCaE34eLvdiTINqj1lmxSBSu8BtDP/view)).
 3. Run the bash script `run_and_evaluate.sh` to create an index and evaluate `TREC_EVAL` scores of all the query formation techniques:
    ```bash
    ./run_and_evaluate.sh
